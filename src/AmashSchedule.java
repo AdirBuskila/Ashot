@@ -109,9 +109,6 @@ public class AmashSchedule {
     }
 
     public boolean solve(int day, int shift, int workerIndex, Shift[][] amashSchedule) {
-        System.out.println("---new stack---");
-        System.out.println("day = " + day);
-        System.out.println("shift = " + shift);
         // base-case: all the shifts are filled
         if (day == 6 && shift == 3)
             return true;
