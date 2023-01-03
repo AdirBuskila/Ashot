@@ -5,4 +5,7 @@ public class Amash extends Worker {
         super(name, new Date(), workSchedule);
     }
 
+    public Amash(String name, Date entryDate) {
+        super(name, new Date(), new boolean[7][3]);
+    }
 }

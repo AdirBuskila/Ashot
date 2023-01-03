@@ -58,8 +58,7 @@ public class Shift {
 
     public void setAmash(Worker amash) {
         this.amash = amash;
-        if (this.guard != null)
-            this.filled = true;
+        this.filled = true;
     }
 
     public Worker getGuard() {

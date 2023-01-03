@@ -1,4 +1,10 @@
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 public class AmashSchedule {
 
@@ -7,76 +13,61 @@ public class AmashSchedule {
     public static final int SHIFT_MIN = 0;
     public static final int SHIFT_MAX = 2;
 
-    private static boolean[][] workSchedule = {
-            { true, false, false }, // sunday
-            { false, true, false }, // monday
-            { true, false, false }, // thursday
-            { false, true, false }, // wednesday
-            { true, false, false }, // thursday
-            { false, true, false }, // friday
-            { true, false, false } // saturday
-    };
-    private static boolean[][] workSchedule1 = {
-            { false, true, true }, // sunday
-            { true, false, true }, // monday
-            { false, true, true }, // thursday
-            { true, false, true }, // wednesday
-            { false, true, true }, // thursday
-            { true, false, true }, // friday
-            { false, true, true } // saturday
+    public static Shift[][] amashSchedule = new Shift[7][3];
 
-    };
-    public static Shift[][] amashSchedule = {
-            { new Shift(0, 0), new Shift(0, 1), new Shift(0, 2), },
-            { new Shift(1, 0), new Shift(1, 1), new Shift(1, 2), },
-            { new Shift(2, 0), new Shift(2, 1), new Shift(2, 2), },
-            { new Shift(3, 0), new Shift(3, 1), new Shift(3, 2), },
-            { new Shift(4, 0), new Shift(4, 1), new Shift(4, 2), },
-            { new Shift(5, 0), new Shift(5, 1), new Shift(5, 2), },
-            { new Shift(6, 0), new Shift(6, 1), new Shift(6, 2), },
-    };
+    public static Amash daniel = new Amash("Daniel Mashid", new Date());
+    public static Amash nir = new Amash("Nir Rosh", new Date());
+    public static Amash shani = new Amash("Shani Sampson", new Date());
+    public static Amash roie = new Amash("Roie Hori", new Date());
+    public static Amash adir = new Amash("Adir Buskila", new Date());
 
-    public static Amash daniel = new Amash("Daniel Mashid", new Date(), workSchedule1);
-    public static Amash nir = new Amash("Nir Rosh", new Date(), workSchedule);
-    public static Amash shani = new Amash("Shani Sampson", new Date(), workSchedule1);
-    public static Amash roie = new Amash("Roie Hori", new Date(), workSchedule);
-    public static Amash adir = new Amash("Adir Buskila", new Date(), workSchedule1);
-
-    public static Amash[] amashim = { daniel, nir, shani, roie, adir };
+    public static Amash[] amashim = { daniel, nir, roie, adir, shani };
     public static final int amashimMaxIndex = amashim.length - 1;
     public static final int amashimAverageShifts = 6;
 
+    public AmashSchedule() {
+        initShifts();
+        List<String> shifts = Arrays.asList("0,0", "1,1", "2,1", "2,2", "3,0", "4,2", "5,0", "5,2", "6,0", "6,2");
+        adir.enterShifts(shifts);
+        shifts = Arrays.asList("0,0", "0,1", "0,2", "1,0", "2,1", "2,2", "3,0", "3,1", "3,2", "4,0", "4,1", "4,2");
+        daniel.enterShifts(shifts);
+        shifts = Arrays.asList("3,0", "3,1", "4,0", "4,1");
+        nir.enterShifts(shifts);
+        shifts = Arrays.asList("0,1", "1,2", "2,1", "3,0", "3,1", "3,2", "4,1", "5,1", "5,2", "6,0");
+        roie.enterShifts(shifts);
+        shifts = Arrays.asList("0,1", "0,2", "1,0", "1,1", "1,2", "2,0", "2,1", "2,2", "3,0", "3,1", "5,0", "5,2",
+                "6,0", "6,1", "6,2");
+        shani.enterShifts(shifts);
+    }
+
     public boolean canWorkDay(Amash amash, int day, int shift) {
-        // checking if the amash marked that he can work that shift
-        if (amash.getWorkSchedule()[day][shift]) {
-            // checking if the amash already working that day
-            boolean canWork = false;
-            switch (shift) {
-                // first shift of that day: can work
-                case 0:
+
+        // checking if the amash already working that day
+        boolean canWork = false;
+        switch (shift) {
+            // first shift of that day: can work
+            case 0:
+                canWork = true;
+                break;
+
+            // second shift: need to check if didn't work shift before
+            case 1:
+                if (!amashSchedule[day][0].getAmash().equals(amash)) {
                     canWork = true;
-                    break;
+                }
+                break;
 
-                // second shift: need to check if didn't work shift before
-                case 1:
-                    if (!amashSchedule[day][0].getAmash().equals(amash)) {
-                        canWork = true;
-                    }
-                    break;
-
-                // third shift: need to check two shifts before
-                case 2:
-                    if (!amashSchedule[day][0].getAmash().equals(amash) &&
-                            !amashSchedule[day][1].getAmash().equals(amash)) {
-                        canWork = true;
-                    }
-                    break;
-                default:
-                    break;
-            }
-            return canWork;
+            // third shift: need to check two shifts before
+            case 2:
+                if (!amashSchedule[day][0].getAmash().equals(amash) &&
+                        !amashSchedule[day][1].getAmash().equals(amash)) {
+                    canWork = true;
+                }
+                break;
+            default:
+                break;
         }
-        return false;
+        return canWork;
     }
 
     // there is a case when an amash worked a night shift
@@ -96,19 +87,7 @@ public class AmashSchedule {
         return true;
     }
 
-    public void printSchedule() {
-        for (int i = 0; i < amashSchedule.length; i++) {
-            System.out.println("--- DAY " + i + " ---");
-            for (int j = 0; j < amashSchedule[0].length; j++) {
-                System.out.println("--- SHIFT " + j + " ---");
-                Shift curShift = amashSchedule[i][j];
-                System.out.println(curShift);
-            }
-            System.out.println();
-        }
-    }
-
-    public boolean solve(int day, int shift, int workerIndex, Shift[][] amashSchedule) {
+    public boolean solve(int day, int shift, Shift[][] amashSchedule) throws StackOverflowError {
         // base-case: all the shifts are filled
         if (day == 6 && shift == 3)
             return true;
@@ -117,28 +96,42 @@ public class AmashSchedule {
             day++;
             shift = 0;
         }
-        // worker index out of bounds: set to starting index (may be random)
-        if (workerIndex > amashimMaxIndex)
-            workerIndex = 0;
         // no one can work: return false
-        if (noOneCanWorkShift(day, shift))
+        if (noOneCanWorkShift(day, shift)) {
+            System.out.println("no one can work :" + day + "," + shift);
             return false;
-
-        Amash curAmash = amashim[workerIndex];
+        }
+        // getting candidates that can work current shift
+        List<Amash> candidates = getCandidates(day, shift);
+        Random r = new Random();
+        int workerIndex = r.nextInt(candidates.size());
+        // choosing random candidate
+        Amash curAmash = candidates.get(workerIndex);
         // checking if amash can work that shift
         if (canWork(curAmash, day, shift)) {
             Shift curShift = amashSchedule[day][shift];
             curShift.setAmash(curAmash); // setting curAmash to curShift
             curAmash.setWorkingShifts(curAmash.getWorkingShifts() + 1);
             // solve the problem for the next shift
-            if (solve(day, ++shift, ++workerIndex, amashSchedule)) {
+            if (solve(day, ++shift, amashSchedule)) {
                 return true;
             }
         } else {
             // that amash cant work that shift: try next amash
-            return solve(day, shift, workerIndex + 1, amashSchedule);
+            return solve(day, shift, amashSchedule);
         }
         return false;
+    }
+
+    private List<Amash> getCandidates(int day, int shift) {
+        List<Amash> candidates = new ArrayList<>();
+        for (int i = 0; i < amashim.length; i++) {
+            Amash curAmash = amashim[i];
+            if (curAmash.canWorkShift(day, shift)) {
+                candidates.add(curAmash);
+            }
+        }
+        return candidates;
     }
 
     public boolean canWork(Amash amash, int day, int shift) {
@@ -162,11 +155,56 @@ public class AmashSchedule {
     }
 
     public void solveProblem() {
-        if (solve(0, 0, 0, amashSchedule)) {
-            printSchedule();
-            printAmashim();
-        } else {
-            System.out.println("There is no solution");
+        try {
+            if (solve(0, 0, amashSchedule)) {
+                printSchedule();
+                printAmashim();
+            } else {
+                System.out.println("There is no solution");
+            }
+        } catch (StackOverflowError e) {
+            System.out.println("No available solution");
+            initShifts();
+            initAmashim();
+            solveProblem();
+        }
+    }
+
+    public void printSchedule() {
+        Map<Integer, String> days = new HashMap<>();
+        days.put(0, "Sunday");
+        days.put(1, "Monday");
+        days.put(2, "Tuesday");
+        days.put(3, "Wednesday");
+        days.put(4, "Thursday");
+        days.put(5, "Friday");
+        days.put(6, "Saturday");
+        Map<Integer, String> shifts = new HashMap<>();
+        shifts.put(0, "Morning");
+        shifts.put(1, "Evening");
+        shifts.put(2, "Night");
+        for (int i = 0; i < amashSchedule.length; i++) {
+            System.out.println("--- Day: " + days.get(i) + " ---");
+            for (int j = 0; j < amashSchedule[0].length; j++) {
+                System.out.println("--- " + shifts.get(j) + " Shift ---");
+                Shift curShift = amashSchedule[i][j];
+                System.out.println(curShift);
+            }
+            System.out.println();
+        }
+    }
+
+    private void initAmashim() {
+        for (int i = 0; i < amashim.length; i++) {
+            amashim[i].setWorkingShifts(0);
+        }
+    }
+
+    private void initShifts() {
+        for (int i = 0; i < amashSchedule.length; i++) {
+            for (int j = 0; j < amashSchedule[0].length; j++) {
+                amashSchedule[i][j] = new Shift(i, j);
+            }
         }
     }
 
