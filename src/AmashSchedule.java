@@ -1,31 +1,23 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 public class AmashSchedule {
 
-    public static final int DAY_MIN = 0;
-    public static final int DAY_MAX = 6;
-    public static final int SHIFT_MIN = 0;
-    public static final int SHIFT_MAX = 2;
+    private static final int DAY_MIN = 0;
 
     public static Shift[][] amashSchedule = new Shift[7][3];
 
-    public static Amash daniel = new Amash("Daniel Mashid", new Date());
-    public static Amash nir = new Amash("Nir Rosh", new Date());
-    public static Amash shani = new Amash("Shani Sampson", new Date());
-    public static Amash roie = new Amash("Roie Hori", new Date());
-    public static Amash adir = new Amash("Adir Buskila", new Date());
+    private static Amash daniel = new Amash("Daniel Mashid", new Date());
+    private static Amash nir = new Amash("Nir Rosh", new Date());
+    private static Amash shani = new Amash("Shani Sampson", new Date());
+    private static Amash roie = new Amash("Roie Hori", new Date());
+    private static Amash adir = new Amash("Adir Buskila", new Date());
 
-    public static Amash[] amashim = { daniel, nir, roie, adir, shani };
-    public static final int amashimMaxIndex = amashim.length - 1;
-    public static final int amashimAverageShifts = 5;
-    Map<Integer, String> days = new HashMap<>();
-    Map<Integer, String> shiftType = new HashMap<>();
+    private static Amash[] amashim = { daniel, nir, roie, adir, shani };
+    private static final int amashimAverageShifts = 5;
 
     public AmashSchedule() {
         initShifts();
@@ -40,16 +32,6 @@ public class AmashSchedule {
         shifts = Arrays.asList("0,1", "0,2", "1,0", "1,1", "1,2", "2,0", "2,1", "2,2", "3,0", "3,1", "5,0", "5,2",
                 "6,0", "6,1", "6,2");
         shani.enterShifts(shifts);
-        days.put(0, "Sunday");
-        days.put(1, "Monday");
-        days.put(2, "Tuesday");
-        days.put(3, "Wednesday");
-        days.put(4, "Thursday");
-        days.put(5, "Friday");
-        days.put(6, "Saturday");
-        shiftType.put(0, "Morning");
-        shiftType.put(1, "Evening");
-        shiftType.put(2, "Night");
     }
 
     private boolean canWorkDay(Amash amash, int day, int shift) {
@@ -101,7 +83,7 @@ public class AmashSchedule {
 
     private boolean solve(int day, int shift, Shift[][] amashSchedule) throws StackOverflowError {
         // base-case: all the shifts are filled
-        if (day == 6 && shift == 3)
+        if (day == 5 && shift == 1)
             return true;
         // shift out of bounds: set day++, shift 0
         if (shift == 3) {
@@ -169,8 +151,8 @@ public class AmashSchedule {
     public void solveProblem() {
         try {
             if (solve(0, 0, amashSchedule)) {
-                printSchedule();
-                printAmashim();
+                // printSchedule();
+                // printAmashim();
             } else {
                 System.out.println("There is no solution");
             }
@@ -185,9 +167,9 @@ public class AmashSchedule {
     public void printSchedule() {
 
         for (int i = 0; i < amashSchedule.length; i++) {
-            System.out.println("--- Day: " + days.get(i) + " ---");
+            System.out.println("--- Day: " + Constants.days.get(i) + " ---");
             for (int j = 0; j < amashSchedule[0].length; j++) {
-                System.out.println("--- " + shiftType.get(j) + " Shift ---");
+                System.out.println("--- " + Constants.shiftType.get(j) + " Shift ---");
                 Shift curShift = amashSchedule[i][j];
                 System.out.println(curShift);
             }

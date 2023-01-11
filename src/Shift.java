@@ -1,9 +1,15 @@
+import java.util.HashMap;
+import java.util.Map;
+
 public class Shift {
     private int day;
     private int shiftType;
     private Worker amash;
     private Worker guard;
     private boolean filled = false;
+
+    Map<Integer, String> days = new HashMap<>();
+    Map<Integer, String> shiftTypeString = new HashMap<>();
 
     public Shift() {
         this.day = 0;
@@ -17,7 +23,7 @@ public class Shift {
         this.day = day;
         this.shiftType = shiftType;
         this.amash = new Amash("Amash", null, null);
-        this.guard = null;
+        this.guard = new Guard("Guard", null, null);
 
     }
 
@@ -85,8 +91,7 @@ public class Shift {
 
     @Override
     public String toString() {
-        return "Day: " + day + ", Shift: " + shiftType + "\n" +
-                "Amash: " + amash;
+        return "Amash: " + amash + "\nGuard: " + guard;
     }
 
 }
